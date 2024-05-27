@@ -30,7 +30,9 @@
             margin-bottom: 20px;
             font-weight: bold;
         }
-        #menu button {
+        #menu button,
+        #input-container button,
+        .modal button {
             padding: 15px 20px;
             margin: 10px;
             border: 2px solid #fff;
@@ -41,7 +43,9 @@
             cursor: pointer;
             transition: background-color 0.3s, border-color 0.3s;
         }
-        #menu button:hover {
+        #menu button:hover,
+        #input-container button:hover,
+        .modal button:hover {
             background-color: #444;
             border-color: #666;
         }
@@ -76,20 +80,6 @@
         }
         #user-input:focus {
             outline: none;
-            border-color: #666;
-        }
-        #input-container button {
-            padding: 15px 20px;
-            border: 2px solid #fff;
-            border-radius: 5px;
-            background-color: transparent;
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s, border-color 0.3s;
-        }
-        #input-container button:hover {
-            background-color: #444;
             border-color: #666;
         }
         #loading {
@@ -156,15 +146,18 @@
             font-size: 16px;
             cursor: pointer;
         }
+    	#title {
+        	text-align: center;
+        }
     </style>
 </head>
 <body>
     <div id="menu">
-        <h1>Dark Room AI v0.1</h1>
-        <button onclick="startGame()">Start Game</button>
-        <button onclick="showModal('aboutModal')">About</button>
-        <button onclick="showModal('instructionsModal')">Instructions</button>
-        <select id="language-selector">
+        <h1>Dark Room AI v0.23</h1>
+        <button onclick="startGame()" aria-label="Start Game">Start Game</button>
+        <button onclick="showModal('aboutModal')" aria-label="About">About</button>
+        <button onclick="showModal('instructionsModal')" aria-label="Instructions">Instructions</button>
+        <select id="language-selector" aria-label="Language Selector">
             <option id="en" value="English">English</option>
             <option id="de" value="German">German</option>
             <option id="fr" value="French">French</option>
@@ -183,7 +176,7 @@
     </div>
     <div id="input-container">
         <input type="text" id="user-input" placeholder="Enter your choice...">
-        <button onclick="continueStory()">Submit</button>
+        <button onclick="continueStory()" aria-label="Submit">Submit</button>
         <div id="loading">Loading...</div>
     </div>
     <div id="aboutModal" class="modal">
@@ -196,7 +189,7 @@
                 This project was created by <a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a> on GitHub. It leverages advanced natural language processing capabilities to provide a dynamic and engaging experience. We hope you enjoy the thrill and suspense of unraveling the mysteries within the dark room.
             </p>
             <p>For any feedback or issues, please visit the <a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">GitHub repository</a>.</p>
-            <button onclick="closeModal('aboutModal')">Close</button>
+            <button onclick="closeModal('aboutModal')" aria-label="Close">Close</button>
         </div>
     </div>
     <div id="instructionsModal" class="modal">
@@ -216,7 +209,7 @@
             <p>
                 Remember, your choices shape the narrative, so think carefully and enjoy the immersive experience!
             </p>
-            <button onclick="closeModal('instructionsModal')">Close</button>
+            <button onclick="closeModal('instructionsModal')" aria-label="Close">Close</button>
         </div>
     </div>
     <script>
@@ -225,7 +218,10 @@
 
         let chatHistory = [];
         let selectedLanguage = 'English';
-
+        const storyDiv = document.getElementById('story');
+        storyDiv.innerHTML += `<h1 id="title"><strong>DARK ROOM V0.23</strong></h1>`;
+        storyDiv.innerHTML += `<p id="title"><strong>--------------- POWERED BY ARTIFICIAL INTELLIGENCE ----------------</strong></p>`;
+        
         document.getElementById('language-selector').addEventListener('change', function() {
             selectedLanguage = this.value;
         });
@@ -276,7 +272,7 @@
                 aiResponse = aiResponse.replace(/\n/g, '<br>');
 
                 chatHistory.push({"role": "assistant", "content": aiResponse});
-                document.getElementById('story').innerHTML += `<p>${aiResponse}</p>`;
+                displayTextWordByWord(aiResponse);
 
                 showLoading(false);
             })
@@ -287,12 +283,11 @@
         }
 
         function continueStory() {
-            const storyDiv = document.getElementById('story');
             const userInput = document.getElementById('user-input').value;
             document.getElementById('user-input').value = '';
 
             chatHistory.push({"role": "user", "content": userInput });
-            storyDiv.innerHTML += `<p>––––––––––––––––––––––––––––––––––––</p>`;
+            storyDiv.innerHTML += `<p id="title">––––––––––––––––––––––––––––––––––––––––––––––––</p>`;
             
             showLoading(true);
 
@@ -312,7 +307,7 @@
                 aiResponse = aiResponse.replace(/\n/g, '<br>');
 
                 chatHistory.push({"role": "assistant", "content": aiResponse});
-                storyDiv.innerHTML += `<p>${aiResponse}</p>`;
+                displayTextWordByWord(aiResponse);
 
                 showLoading(false);
 
@@ -325,6 +320,24 @@
                 showLoading(false);
             });
         } 
+
+        function displayTextWordByWord(text) {
+            const storyDiv = document.getElementById('story');
+            const words = text.split(' ');
+            storyDiv.innerHTML += '<p id="current-text"></p>';
+            const currentTextElement = document.getElementById('current-text');
+            let index = 0;
+            function displayNextWord() {
+                if (index < words.length) {
+                    currentTextElement.innerHTML += words[index] + ' ';
+                    index++;
+                    setTimeout(displayNextWord, 100); // Adjust the delay (in milliseconds) as needed
+                } else {
+                    currentTextElement.removeAttribute('id');
+                }
+            }
+            displayNextWord();
+        }
 
         function showLoading(show) {
             const loadingDiv = document.getElementById('loading');
