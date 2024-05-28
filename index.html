@@ -136,7 +136,7 @@
             text-align: left;
         }
         /* New CSS for the dropdown menu */
-        #language-selector {
+        #language-selector, #difficulty-selector {
             padding: 10px;
             margin: 10px;
             border: 2px solid #fff;
@@ -146,8 +146,8 @@
             font-size: 16px;
             cursor: pointer;
         }
-    	#title {
-        	text-align: center;
+        #title {
+            text-align: center;
         }
     </style>
 </head>
@@ -169,6 +169,12 @@
             <option id="ru" value="Russian">Russian</option>
             <option id="pt" value="Portuguese">Portuguese</option>
             <option id="ar" value="Arabic">Arabic</option>
+        </select>
+        <select id="difficulty-selector" aria-label="Difficulty Selector">
+            <option value="baby easy">Baby Mode</option>
+            <option value="easy">Easy</option>
+            <option value="medium" selected="true">Medium</option>
+            <option value="hard">Hard</option>
         </select>
     </div>
     <div id="story-container">
@@ -218,12 +224,18 @@
 
         let chatHistory = [];
         let selectedLanguage = 'English';
+        let selectedDifficulty = 'medium';
         const storyDiv = document.getElementById('story');
         storyDiv.innerHTML += `<h1 id="title"><strong>DARK ROOM V0.23</strong></h1>`;
-        storyDiv.innerHTML += `<p id="title"><strong>--------------- POWERED BY ARTIFICIAL INTELLIGENCE ----------------</strong></p>`;
+        storyDiv.innerHTML += `<h6 id="title"><strong>> POWERED BY ARTIFICIAL INTELLIGENCE <</strong></h6>`;
+        storyDiv.innerHTML += `<p id="title">––––––––––––––––––––––––––––––––––––––––––––––––</p>`;
         
         document.getElementById('language-selector').addEventListener('change', function() {
             selectedLanguage = this.value;
+        });
+
+        document.getElementById('difficulty-selector').addEventListener('change', function() {
+            selectedDifficulty = this.value;
         });
 
         function startGame() {
@@ -246,7 +258,7 @@
             chatHistory = [
                 {
                     "role": "system",
-                    "content": `You are an AI guiding a player through a scary story. Describe the environment, provide options for actions, and handle invalid choices by stating that the action cannot be performed because it doesn't exist. Answer only in ${selectedLanguage}.`
+                    "content": `You are an AI guiding a player through a scary story. Describe the environment, provide options for actions, and handle invalid choices by stating that the action cannot be performed because it doesn't exist. Go down a line after completing a sentence. The character has jeans with pockets to store items he finds. At the start the Investory is emtpy. Display it under the options, just call it Inventory. Answer only in ${selectedLanguage}. Make it ${selectedDifficulty} to escape!`
                 }
             ];
         }
@@ -270,7 +282,8 @@
             .then(data => {
                 let aiResponse = data.choices[0].message.content;
                 aiResponse = aiResponse.replace(/\n/g, '<br>');
-
+                aiResponse = aiResponse.replace(/\*\*(.*?)\*\*/gs, "<strong>$1</strong>");
+                
                 chatHistory.push({"role": "assistant", "content": aiResponse});
                 displayTextWordByWord(aiResponse);
 
@@ -305,6 +318,7 @@
             .then(data => {
                 let aiResponse = data.choices[0].message.content;
                 aiResponse = aiResponse.replace(/\n/g, '<br>');
+                aiResponse = aiResponse.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
                 chatHistory.push({"role": "assistant", "content": aiResponse});
                 displayTextWordByWord(aiResponse);
@@ -331,7 +345,7 @@
                 if (index < words.length) {
                     currentTextElement.innerHTML += words[index] + ' ';
                     index++;
-                    setTimeout(displayNextWord, 100); // Adjust the delay (in milliseconds) as needed
+                    setTimeout(displayNextWord, 5); // Adjust the delay (in milliseconds) as needed
                 } else {
                     currentTextElement.removeAttribute('id');
                 }
