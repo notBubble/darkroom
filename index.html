@@ -258,7 +258,7 @@
             chatHistory = [
                 {
                     "role": "system",
-                    "content": `You are an AI guiding a player through a scary story. Describe the environment, provide options for actions, and handle invalid choices by stating that the action cannot be performed because it doesn't exist. Go down a line after completing a sentence. The character has jeans with pockets to store items he finds. At the start the Investory is emtpy. Display it under the options, just call it Inventory. Answer only in ${selectedLanguage}. Make it ${selectedDifficulty} to escape!`
+                    "content": `You are an AI guiding a player through a scary story. Describe the environment, provide options for actions, and handle invalid choices by stating that the action cannot be performed because it doesn't exist. Go down a line after completing a sentence. The character has jeans with pockets to store items he finds. At the start the Investory is emtpy. Display it under the options, just call it Inventory. Answer only in ${selectedLanguage}. Make it ${selectedDifficulty} to escape! When the Player wins add "The End!" into the message.`
                 }
             ];
         }
@@ -282,7 +282,7 @@
             .then(data => {
                 let aiResponse = data.choices[0].message.content;
                 aiResponse = aiResponse.replace(/\n/g, '<br>');
-                aiResponse = aiResponse.replace(/\*\*(.*?)\*\*/gs, "<strong>$1</strong>");
+                aiResponse = aiResponse.replace(/\*\*/g, "");
                 
                 chatHistory.push({"role": "assistant", "content": aiResponse});
                 displayTextWordByWord(aiResponse);
@@ -295,45 +295,282 @@
             });
         }
 
-        function continueStory() {
-            const userInput = document.getElementById('user-input').value;
-            document.getElementById('user-input').value = '';
+const translations = {
+    "English": {
+        "startGame": "Start Game",
+        "about": "About",
+        "instructions": "Instructions",
+        "submit": "Submit",
+        "backToMenu": "Back to Menu",
+        "aboutModalTitle": "About Dark Room AI",
+        "instructionsModalTitle": "Instructions",
+        "close": "Close",
+        "loading": "Loading...",
+        "aboutContent": "Dark Room AI v0.1 is an interactive scary story experience designed to immerse you in a mysterious narrative guided by an artificial intelligence. This project was created by notBubble on GitHub. For any feedback or issues, please visit the GitHub repository.",
+        "instructionsContent": "Welcome to Dark Room AI! Here is how you can navigate your way through the story: Begin the game by clicking 'Start Game'. Once the story begins, read the prompts carefully. Enter your choices into the input box provided. Click the 'Submit' button to send your choice to the AI. Remember, your choices shape the narrative, so think carefully and enjoy the immersive experience!",
+        "babyEasy": "Baby Mode",
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard"
+    },
+    "German": {
+        "startGame": "Spiel starten",
+        "about": "Über",
+        "instructions": "Anweisungen",
+        "submit": "Einreichen",
+        "backToMenu": "Zurück zum Menü",
+        "aboutModalTitle": "Über Dark Room AI",
+        "instructionsModalTitle": "Anweisungen",
+        "close": "Schließen",
+        "loading": "Wird geladen...",
+        "aboutContent": "Dark Room AI v0.1 ist ein interaktives Gruselgeschichten-Erlebnis, das Sie in eine geheimnisvolle Erzählung eintauchen lässt, die von einer künstlichen Intelligenz geleitet wird. Dieses Projekt wurde von notBubble auf GitHub erstellt. Für Feedback oder Probleme besuchen Sie bitte das GitHub-Repository.",
+        "instructionsContent": "Willkommen bei Dark Room AI! So navigieren Sie durch die Geschichte: Beginnen Sie das Spiel, indem Sie auf 'Spiel starten' klicken. Lesen Sie die Aufforderungen sorgfältig, sobald die Geschichte beginnt. Geben Sie Ihre Entscheidungen in das bereitgestellte Eingabefeld ein. Denken Sie daran, dass Ihre Entscheidungen die Erzählung formen, also denken Sie sorgfältig nach und genießen Sie das immersive Erlebnis!",
+        "babyEasy": "Kindermodus",
+        "easy": "Einfach",
+        "medium": "Mittel",
+        "hard": "Schwer"
+    },
+    "French": {
+        "startGame": "Commencer le jeu",
+        "about": "À propos",
+        "instructions": "Instructions",
+        "submit": "Soumettre",
+        "backToMenu": "Retour au menu",
+        "aboutModalTitle": "À propos de Dark Room AI",
+        "instructionsModalTitle": "Instructions",
+        "close": "Fermer",
+        "loading": "Chargement...",
+        "aboutContent": "Dark Room AI v0.1 est une expérience interactive d'histoire effrayante conçue pour vous plonger dans une narration mystérieuse guidée par une intelligence artificielle. Ce projet a été créé par notBubble sur GitHub. Pour tout commentaire ou problème, veuillez visiter le dépôt GitHub.",
+        "instructionsContent": "Bienvenue dans Dark Room AI! Voici comment naviguer à travers l'histoire: Commencez le jeu en cliquant sur 'Commencer le jeu'. Une fois que l'histoire commence, lisez attentivement les invite. Entrez vos choix dans la boîte d'entrée fournie. Rappelez-vous, vos choix façonnent la narration, alors réfléchissez bien et profitez de l'expérience immersive!",
+        "babyEasy": "Mode Bébé",
+        "easy": "Facile",
+        "medium": "Moyen",
+        "hard": "Difficile"
+    },
+    "Spanish": {
+        "startGame": "Comenzar juego",
+        "about": "Acerca de",
+        "instructions": "Instrucciones",
+        "submit": "Enviar",
+        "backToMenu": "Volver al menú",
+        "aboutModalTitle": "Acerca de Dark Room AI",
+        "instructionsModalTitle": "Instrucciones",
+        "close": "Cerrar",
+        "loading": "Cargando...",
+        "aboutContent": "Dark Room AI v0.1 es una experiencia de historia de terror interactiva diseñada para sumergirte en una narrativa misteriosa guiada por una inteligencia artificial. Este proyecto fue creado por notBubble en GitHub. Para cualquier comentario o problema, por favor visita el repositorio en GitHub.",
+        "instructionsContent": "¡Bienvenido a Dark Room AI! Así es como puedes navegar a través de la historia: Comienza el juego haciendo clic en 'Comenzar juego'. Una vez que comience la historia, lee las indicaciones cuidadosamente. Ingresa tus elecciones en el cuadro de entrada provisto. Recuerda, tus decisiones dan forma a la narrativa, así que piensa cuidadosamente y disfruta de la experiencia inmersiva.",
+        "babyEasy": "Modo Bebé",
+        "easy": "Fácil",
+        "medium": "Medio",
+        "hard": "Difícil"
+    },
+    "Italian": {
+        "startGame": "Inizia il gioco",
+        "about": "Informazioni",
+        "instructions": "Istruzioni",
+        "submit": "Invia",
+        "backToMenu": "Torna al menu",
+        "aboutModalTitle": "Informazioni su Dark Room AI",
+        "instructionsModalTitle": "Istruzioni",
+        "close": "Chiudi",
+        "loading": "Caricamento...",
+        "aboutContent": "Dark Room AI v0.1 è un'esperienza interattiva di storie spaventose progettata per immergerti in una narrazione misteriosa guidata da un'intelligenza artificiale. Questo progetto è stato creato da notBubble su GitHub. Per qualsiasi feedback o problema, visita il repository su GitHub.",
+        "instructionsContent": "Benvenuto in Dark Room AI! Ecco come puoi navigare attraverso la storia: Inizia il gioco facendo clic su 'Inizia il gioco'. Una volta che la storia inizia, leggi attentamente le istruzioni. Inserisci le tue scelte nella casella di input fornita. Ricorda, le tue scelte plasmano la narrazione, quindi pensa attentamente e goditi l'esperienza coinvolgente!",
+        "babyEasy": "Modalità Bambino",
+        "easy": "Facile",
+        "medium": "Medio",
+        "hard": "Difficile"
+    },
+    "Japanese": {
+        "startGame": "ゲームを開始",
+        "about": "について",
+        "instructions": "手順",
+        "submit": "提出",
+        "backToMenu": "メニューに戻る",
+        "aboutModalTitle": "Dark Room AIについて",
+        "instructionsModalTitle": "手順",
+        "close": "閉じる",
+        "loading": "読み込んでいます...",
+        "aboutContent": "Dark Room AI v0.1は、人工知能によって案内される神秘的な物語体験に没入させることを目的としたインタラクティブな恐怖物語体験です。このプロジェクトはGitHubのnotBubbleによって作成されました。フィードバックや問題がある場合は、GitHubリポジトリをご覧ください。",
+        "instructionsContent": "Dark Room AIへようこそ！物語を進める方法は次の通りです。 'ゲームを開始'をクリックしてゲームを開始します。物語が始まると、指示を注意して読んでください。提供された入力ボックスに選択肢を入力します。注意深く考え、没入型体験をお楽しみください！",
+        "babyEasy": "ベビーモード",
+        "easy": "簡単",
+        "medium": "中級",
+        "hard": "難しい"
+    },
+    "Chinese": {
+        "startGame": "开始游戏",
+        "about": "关于",
+        "instructions": "说明",
+        "submit": "提交",
+        "backToMenu": "返回菜单",
+        "aboutModalTitle": "关于 Dark Room AI",
+        "instructionsModalTitle": "说明",
+        "close": "关闭",
+        "loading": "加载中...",
+        "aboutContent": "Dark Room AI v0.1是一种交互式恐怖故事体验，旨在让您沉浸在由人工智能引导的神秘叙事中。该项目由GitHub上的notBubble创建。如有任何反馈或问题，请访问GitHub存储库。",
+        "instructionsContent": "欢迎来到Dark Room AI！以下是您如何浏览故事的方式: 通过单击“开始游戏”开始游戏。一旦故事开始，请仔细阅读提示。将您的选择输入提供的输入框中。根据您的输入，AI将生成故事的下一部分。跟随提示继续做出选择。",
+        "babyEasy": "婴儿模式",
+        "easy": "简单",
+        "medium": "中等",
+        "hard": "困难"
+    },
+    "Korean": {
+        "startGame": "게임 시작",
+        "about": "소개",
+        "instructions": "지시 사항",
+        "submit": "제출",
+        "backToMenu": "메뉴로 돌아가기",
+        "aboutModalTitle": "Dark Room AI 소개",
+        "instructionsModalTitle": "지시 사항",
+        "close": "닫기",
+        "loading": "로딩 중...",
+        "aboutContent": "Dark Room AI v0.1은 인공 지능에 의해 안내되는 신비로운 이야기 경험에 몰입시키기 위해 디자인된 대화형 공포 이야기체험입니다. 이 프로젝트는 GitHub의 notBubble에 의해 만들어졌습니다. 피드백이나 문제가 있으면 GitHub 저장소를 방문하세요.",
+        "instructionsContent": "Dark Room AI에 오신 것을 환영합니다! 다음은 이야기를 통해 길을 찾는 방법입니다: '게임 시작'을 클릭하여 게임을 시작합니다. 이야기가 시작되면 프롬프트를 주의 깊게 읽으십시오. 제공된 입력 상자에 선택 사항을 입력하십시오. 귀하의 선택에 따라 AI가 이야기의 다음 부분을 생성합니다. 지시에 따라 계속 선택을 해보세요.",
+        "babyEasy": "아기 모드",
+        "easy": "쉬움",
+        "medium": "보통",
+        "hard": "어려움"
+    },
+    "Russian": {
+        "startGame": "Начать игру",
+        "about": "О нас",
+        "instructions": "Инструкции",
+        "submit": "Отправить",
+        "backToMenu": "Назад в меню",
+        "aboutModalTitle": "О Dark Room AI",
+        "instructionsModalTitle": "Инструкции",
+        "close": "Закрыть",
+        "loading": "Загрузка...",
+        "aboutContent": "Dark Room AI v0.1 - это интерактивное страшное историческое приключение, разработанное для погружения вас в загадочный повествовательный опыт под руководством искусственного интеллекта. Этот проект был создан notBubble на GitHub. Для любых отзывов или проблем, пожалуйста, посетите репозиторий GitHub.",
+        "instructionsContent": "Добро пожаловать в Dark Room AI! Вот как вы можете пройти через историю: Начните игру, щелкнув 'Начать игру'. Как только история начнется, внимательно читайте подсказки. Введите свой выбор в предоставленное поле для ввода. Помните, что ваши решения формируют повествование, поэтому обдумывайте каждое действие и наслаждайтесь захватывающим опытом!",
+        "babyEasy": "Детский режим",
+        "easy": "Легко",
+        "medium": "Средний",
+        "hard": "Трудно"
+    },
+    "Portuguese": {
+        "startGame": "Iniciar jogo",
+        "about": "Sobre",
+        "instructions": "Instruções",
+        "submit": "Enviar",
+        "backToMenu": "Voltar ao menu",
+        "aboutModalTitle": "Sobre Dark Room AI",
+        "instructionsModalTitle": "Instruções",
+        "close": "Fechar",
+        "loading": "Carregando...",
+        "aboutContent": "Dark Room AI v0.1 é uma experiência interativa de história assustadora projetada para mergulhá-lo em uma narrativa misteriosa guiada por uma inteligência artificial. Este projeto foi criado por notBubble no GitHub. Para qualquer feedback ou problema, visite o repositório no GitHub.",
+        "instructionsContent": "Bem-vindo ao Dark Room AI! Eis como você pode navegar pela história: Comece o jogo clicando em 'Iniciar Jogo'. Uma vez que a história comece, leia atentamente os prompts. Insira suas escolhas na caixa de entrada fornecida. Lembre-se, suas escolhas moldam a narrativa, então pense cuidadosamente e desfrute da experiência imersiva!",
+        "babyEasy": "Modo Bebê",
+        "easy": "Fácil",
+        "medium": "Médio",
+        "hard": "Difícil"
+    },
+    "Arabic": {
+        "startGame": "ابدأ اللعبة",
+        "about": "حول",
+        "instructions": "تعليمات",
+        "submit": "إرسال",
+        "backToMenu": "العودة إلى القائمة",
+        "aboutModalTitle": "حول Dark Room AI",
+        "instructionsModalTitle": "تعليمات",
+        "close": "إغلاق",
+        "loading": "جارٍ التحميل...",
+        "aboutContent": "Dark Room AI v0.1 هو تجربة قصة مخيفة تفاعلية مصممة لغمرك في سرد غامض يسترشد بالذكاء الاصطناعي. تم إنشاء هذا المشروع بواسطة notBubble على GitHub. لأي ملاحظات أو مشاكل، يرجى زيارة مستودع الرموز على GitHub.",
+        "instructionsContent": "مرحبًا بكم في Dark Room AI! إليك كيف يمكنك التنقل خلال القصة: ابدأ اللعبة بالنقر فوق 'ابدأ اللعبة'. عندما تبدأ القصة، اقرأ التعليمات بعناية. أدخل اختياراتك في مربع الإدخال المقدم. تذكر، اختياراتك تشكل السرد، لذا فكر جيدًا واستمتع بالتجربة المشوقة!",
+        "babyEasy": "وضع الطفل",
+        "easy": "سهل",
+        "medium": "متوسط",
+        "hard": "صعب"
+    }
+    // Add translations for the remaining languages
+};
 
-            chatHistory.push({"role": "user", "content": userInput });
-            storyDiv.innerHTML += `<p id="title">–––––––––––––––––––––––</p>`;
-            
-            showLoading(true);
+function updateLanguage() {
+    const language = selectedLanguage;
+    document.querySelector('button[aria-label="Start Game"]').textContent = translations[language].startGame;
+    document.querySelector('button[aria-label="About"]').textContent = translations[language].about;
+    document.querySelector('button[aria-label="Instructions"]').textContent = translations[language].instructions;
+    document.querySelector('#input-container button').textContent = translations[language].submit;
+    document.getElementById('loading').textContent = translations[language].loading;
+    document.querySelector('#aboutModal .modal-content h2').textContent = translations[language].aboutModalTitle;
+    document.querySelector('#instructionsModal .modal-content h2').textContent = translations[language].instructionsModalTitle;
+    document.querySelector('#difficulty-selector option[value="baby easy"]').textContent = translations[language].babyEasy;
+    document.querySelector('#difficulty-selector option[value="easy"]').textContent = translations[language].easy;
+    document.querySelector('#difficulty-selector option[value="medium"]').textContent = translations[language].medium;
+    document.querySelector('#difficulty-selector option[value="hard"]').textContent = translations[language].hard;
 
-            fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    model: MODEL,
-                    messages: chatHistory
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                let aiResponse = data.choices[0].message.content;
-                aiResponse = aiResponse.replace(/\n/g, '<br>');
-                aiResponse = aiResponse.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    document.querySelector('#aboutModal .modal-content').innerHTML = `
+        <h2>${translations[language].aboutModalTitle}</h2>
+        ${translations[language].aboutContent}
+        <button onclick="closeModal('aboutModal')" aria-label="Close">${translations[language].close}</button>
+    `;
 
-                chatHistory.push({"role": "assistant", "content": aiResponse});
-                displayTextWordByWord(aiResponse);
+    document.querySelector('#instructionsModal .modal-content').innerHTML = `
+        <h2>${translations[language].instructionsModalTitle}</h2>
+        ${translations[language].instructionsContent}
+        <button onclick="closeModal('instructionsModal')" aria-label="Close">${translations[language].close}</button>
+    `;
+}
 
-                showLoading(false);
+document.getElementById('language-selector').addEventListener('change', function() {
+    selectedLanguage = this.value;
+    updateLanguage();
+});
 
-                if (aiResponse.includes("The End")) {
-                    document.getElementById('input-container').style.display = 'none';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showLoading(false);
-            });
-        } 
+function continueStory() {
+    const userInput = document.getElementById('user-input').value;
+    document.getElementById('user-input').value = '';
+
+    chatHistory.push({"role": "user", "content": userInput });
+    storyDiv.innerHTML += `<p id="title">–––––––––––––––––––––––</p>`;
+    
+    showLoading(true);
+
+    fetch(API_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            model: MODEL,
+            messages: chatHistory
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        let aiResponse = data.choices[0].message.content;
+        aiResponse = aiResponse.replace(/\n/g, '<br>');
+        aiResponse = aiResponse.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+        chatHistory.push({"role": "assistant", "content": aiResponse});
+        displayTextWordByWord(aiResponse);
+
+        showLoading(false);
+
+        if (aiResponse.includes("The End")) {
+            const submitButton = document.querySelector('#input-container button');
+            submitButton.textContent = translations[selectedLanguage].backToMenu;
+            submitButton.setAttribute('onclick', 'backToMenu()');
+            document.getElementById('user-input').style.display = 'none';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showLoading(false);
+    });
+}
+
+function backToMenu() {
+    document.getElementById('story-container').classList.remove('active');
+    document.getElementById('input-container').classList.remove('active');
+    document.getElementById('menu').style.display = 'flex';
+    document.getElementById('user-input').style.display = 'block';
+
+    const submitButton = document.querySelector('#input-container button');
+    submitButton.textContent = translations[selectedLanguage].submit;
+    submitButton.setAttribute('onclick', 'continueStory()');
+}
 
         function displayTextWordByWord(text) {
             const storyDiv = document.getElementById('story');
