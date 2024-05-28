@@ -228,7 +228,7 @@
         const storyDiv = document.getElementById('story');
         storyDiv.innerHTML += `<h1 id="title"><strong>DARK ROOM V0.23</strong></h1>`;
         storyDiv.innerHTML += `<h6 id="title"><strong>> POWERED BY ARTIFICIAL INTELLIGENCE <</strong></h6>`;
-        storyDiv.innerHTML += `<p id="title">––––––––––––––––––––––––––––––––––––––––––––––––</p>`;
+        storyDiv.innerHTML += `<p id="title">–––––––––––––––––––––––</p>`;
         
         document.getElementById('language-selector').addEventListener('change', function() {
             selectedLanguage = this.value;
@@ -300,7 +300,7 @@
             document.getElementById('user-input').value = '';
 
             chatHistory.push({"role": "user", "content": userInput });
-            storyDiv.innerHTML += `<p id="title">––––––––––––––––––––––––––––––––––––––––––––––––</p>`;
+            storyDiv.innerHTML += `<p id="title">–––––––––––––––––––––––</p>`;
             
             showLoading(true);
 
