@@ -172,13 +172,22 @@
 </head>
 <body>
     <div id="menu">
-        <h1>Dark Room AI v0.39</h1>
+        <h1>Dark Room AI v0.36</h1>
         <button onclick="startGame()" aria-label="Start Game">Start Game</button>
         <button onclick="showModal('aboutModal')" aria-label="About">About</button>
         <button onclick="showModal('instructionsModal')" aria-label="Instructions">Instructions</button>
         <select id="language-selector" aria-label="Language Selector">
             <option id="en" value="English" selected="true">English</option>
-            <!-- Other language options omitted for brevity -->
+            <option id="de" value="German">German</option>
+            <option id="fr" value="French">French</option>
+            <option id="es" value="Spanish">Spanish</option>
+            <option id="it" value="Italian">Italian</option>
+            <option id="jp" value="Japanese">Japanese</option>
+            <option id="cn" value="Chinese">Chinese</option>
+            <option id="ko" value="Korean">Korean</option>
+            <option id="ru" value="Russian">Russian</option>
+            <option id="pt" value="Portuguese">Portuguese</option>
+            <option id="ar" value="Arabic">Arabic</option>
         </select>
         <select id="difficulty-selector" aria-label="Difficulty Selector">
             <option value="baby easy">Baby Mode</option>
@@ -526,6 +535,8 @@ function updateLanguage() {
         <button onclick="closeModal('instructionsModal')" aria-label="Close">${translations[language].close}</button>
     `;
 }
+
+updateLanguage();
 
 document.getElementById('language-selector').addEventListener('change', function() {
     selectedLanguage = this.value;
