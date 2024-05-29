@@ -164,6 +164,14 @@
             transition: background-color 0.3s, border-color 0.3s;
             z-index: 101; /* Ensure it is above other elements in the game container */
         }
+    
+    	.home-icon {
+			width: 17px;  /* Set the desired width */
+			height: 17px; /* Set the desired height */
+			display: inline-block;
+			vertical-align: middle;
+		}
+
         .back-to-menu:hover {
             background-color: #444;
             border-color: #666;
@@ -197,7 +205,12 @@
         </select>
     </div>
     <div id="story-container">
-        <button class="back-to-menu" onclick="backToMenu()" aria-label="Back to Menu">Back to Menu</button> <!-- New Back to Menu button -->
+        <div class="button-container">
+		    <button class="back-to-menu" onclick="backToMenu()" aria-label="Back to Menu">
+    			<img src="https://uxwing.com/wp-content/themes/uxwing/download/web-app-development/home-page-white-icon.png" alt="Home Icon" class="home-icon">
+			</button>
+		</div>
+ <!-- New Back to Menu button -->
         <div id="story"></div>
     </div>
     <div id="input-container">
