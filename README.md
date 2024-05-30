@@ -1,6 +1,12 @@
-# Dark Room AI
+# Dark Room AI v0.36
 
 Dark Room AI is an interactive scary story experience designed to immerse you in a mysterious narrative guided by an artificial intelligence. The project was created as a fun and engaging way to experiment with AI storytelling capabilities.
+
+## Changelog for v0.36
+
+- **Enhanced GUI**: We’ve revamped the user interface to be more intuitive and visually appealing, enhancing the immersive experience.
+- **Improved AI Responses**: The AI now provides more nuanced and contextually aware responses, making the story unfold in a more engaging manner.
+- **Faster Response Time**: Significant performance improvements ensure the AI responds quicker, enhancing the flow of the narrative.
 
 ## Motivation
 
