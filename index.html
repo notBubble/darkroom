@@ -149,16 +149,43 @@
         #title {
             text-align: center;
         }
+        /* CSS for the Back to Menu button */
+        .back-to-menu {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 5px 10px; /* Smaller padding */
+            border: 2px solid #fff;
+            border-radius: 5px;
+            background-color: transparent;
+            color: #fff;
+            font-size: 12px; /* Smaller font size */
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+            z-index: 101; /* Ensure it is above other elements in the game container */
+        }
+    
+    	.home-icon {
+			width: 17px;  /* Set the desired width */
+			height: 17px; /* Set the desired height */
+			display: inline-block;
+			vertical-align: middle;
+		}
+
+        .back-to-menu:hover {
+            background-color: #444;
+            border-color: #666;
+        }
     </style>
 </head>
 <body>
     <div id="menu">
-        <h1>Dark Room AI v0.23</h1>
+        <h1>Dark Room AI v0.36</h1>
         <button onclick="startGame()" aria-label="Start Game">Start Game</button>
         <button onclick="showModal('aboutModal')" aria-label="About">About</button>
         <button onclick="showModal('instructionsModal')" aria-label="Instructions">Instructions</button>
         <select id="language-selector" aria-label="Language Selector">
-            <option id="en" value="English">English</option>
+            <option id="en" value="English" selected="true">English</option>
             <option id="de" value="German">German</option>
             <option id="fr" value="French">French</option>
             <option id="es" value="Spanish">Spanish</option>
@@ -178,6 +205,12 @@
         </select>
     </div>
     <div id="story-container">
+        <div class="button-container">
+		    <button class="back-to-menu" onclick="backToMenu()" aria-label="Back to Menu">
+    			<img src="https://uxwing.com/wp-content/themes/uxwing/download/web-app-development/home-page-white-icon.png" alt="Home Icon" class="home-icon">
+			</button>
+		</div>
+ <!-- New Back to Menu button -->
         <div id="story"></div>
     </div>
     <div id="input-container">
@@ -189,33 +222,14 @@
     <div id="aboutModal" class="modal">
         <div class="modal-content">
             <h2>About Dark Room AI</h2>
-            <p>
-                Dark Room AI v0.1 is an interactive scary story experience designed to immerse you in a mysterious narrative guided by an artificial intelligence.<br>You will be faced with various choices and your decisions will direct the path of the story.
-            </p>
-            <p>
-                This project was created by <a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a> on GitHub.<br>It leverages advanced natural language processing capabilities to provide a dynamic and engaging experience.<br>We hope you enjoy the thrill and suspense of unraveling the mysteries within the dark room.
-            </p>
-            <p>For any feedback or issues, please visit the <a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">GitHub repository</a>.</p><br>
+            <!-- About content omitted for brevity -->
             <button onclick="closeModal('aboutModal')" aria-label="Close">Close</button>
         </div>
     </div>
     <div id="instructionsModal" class="modal">
         <div class="modal-content">
             <h2>Instructions</h2>
-            <p>
-                Welcome to Dark Room AI! Here is how you can navigate your way through the story:
-            </p>
-            <ul style="text-align: left; list-style-type: disc; padding-left: 20px;">
-                <li>Begin the game by clicking "Start Game".</li>
-                <li>Once the story begins, read the prompts carefully.</li>
-                <li>Enter your choices into the input box provided.<br>Your choices can include actions like "look around", "pick up the key", or "open the door".</li>
-                <li>Click the "Submit" button to send your choice to the AI.</li>
-                <li>Based on your input, the AI will generate the next part of the story.<br>Follow along and continue making choices as prompted.</li>
-                <li>If you reach an end to the story, you can restart to explore different paths.</li>
-            </ul>
-            <p>
-                Remember, your choices shape the narrative, so think carefully and enjoy the immersive experience!
-            </p><br>
+            <!-- Instructions content omitted for brevity -->
             <button onclick="closeModal('instructionsModal')" aria-label="Close">Close</button>
         </div>
     </div>
@@ -227,10 +241,7 @@
         let selectedLanguage = 'English';
         let selectedDifficulty = 'medium';
         const storyDiv = document.getElementById('story');
-        storyDiv.innerHTML += `<h1 id="title"><strong>DARK ROOM V0.23</strong></h1>`;
-        storyDiv.innerHTML += `<h6 id="title"><strong>> POWERED BY ARTIFICIAL INTELLIGENCE <</strong></h6>`;
-        storyDiv.innerHTML += `<p id="title">–––––––––––––––––––––––</p>`;
-        
+
         document.getElementById('language-selector').addEventListener('change', function() {
             selectedLanguage = this.value;
         });
@@ -241,9 +252,15 @@
 
         function startGame() {
             resetChatHistory();
+            const storyDiv = document.getElementById('story');
+            storyDiv.innerHTML = "";
+            storyDiv.innerHTML += `<h1 id="title"><strong>DARK ROOM V0.39</strong></h1>`;
+            storyDiv.innerHTML += `<h6 id="title"><strong>> POWERED BY ARTIFICIAL INTELLIGENCE <</strong></h6>`;
+            storyDiv.innerHTML += `<p id="title">–––––––––––––––––––––––</p>`;
             document.getElementById('menu').style.display = 'none';
             document.getElementById('story-container').classList.add('active');
             document.getElementById('input-container').classList.add('active');
+            document.querySelector('.back-to-menu').style.display = 'block'; // Show the Back to Menu button
             initializeStory();
         }
 
@@ -259,13 +276,25 @@
             chatHistory = [
                 {
                     "role": "system",
-                    "content": `You are an AI guiding a player through a scary story.<br>Describe the environment, provide options for actions, and handle invalid choices by stating that the action cannot be performed because it doesn't exist.<br>Go down a line after completing a sentence.<br>The character has jeans with pockets to store items he finds.<br>At the start the Investory is emtpy.<br>Display it under the options, just call it Inventory.<br>Answer only in ${selectedLanguage}.<br>Make it ${selectedDifficulty} to escape! When the Player wins add "The End!" into the message.`
+                    "content": `You are an AI guiding a player through a scary story. Describe the environment, provide options for actions, and handle invalid choices by stating that the action cannot be performed because it doesn't exist. Go down a line after completing a sentence. The character has jeans with pockets to store items he finds. At the start the Investory is emtpy, dont show the Inventory when the player escaped the room. Display it under the options, just call it Inventory. Answer only in ${selectedLanguage}. Make it ${selectedDifficulty} to escape! When the Player wins add "‎ ‎ ‎  ‎ " into the message. dont let the player cheat by helping him dont let the player decide when he wins, a game for the difficulty takes more then: baby mode: 10 moves, easy: 25 moves, medium: 50 moves, hard: 90 moves.
+heres what it should exactly look like, dont show the options and inventory when the player escaped! add "‎ ‎ " when he escaped!:
+{story}
+
+<strong>OPTIONS:</strong> (not at the end) (strong has to be lowercase) (translate the option names and OPTIONS but UPPERCASE)
+1. {option 1}
+2. {option 2}
+...
+
+<strong>INVENTORY:</strong> (not at the end) (strong has to be lowercase) (show [EMPTY] when there are no items) (translate the item names and INVENTORY but UPPERCASE)
+1. {item 1}
+2. {item 2}
+...`
                 }
             ];
         }
 
         function initializeStory() {
-            const initialPrompt = "You are in a dark room, you don't know where you are.<br>Describe the room and provide a list of options for what the player can do next.<br>If the player chooses an option not listed, respond that the item or action cannot be done because it doesn't exist.";
+            const initialPrompt = "You are in a dark room, you don't know where you are. Describe the room and provide a list of options for what the player can do next. If the player chooses an option not listed, respond that the item or action cannot be done because it doesn't exist.";
             chatHistory.push({"role": "user", "content": initialPrompt });
             showLoading(true);
 
@@ -285,6 +314,12 @@
                 aiResponse = aiResponse.replace(/\n/g, '<br>');
                 aiResponse = aiResponse.replace(/\*\*/g, "");
                 
+                const storyDiv = document.getElementById('story');
+	            storyDiv.innerHTML = "";
+	            storyDiv.innerHTML += `<h1 id="title"><strong>DARK ROOM V0.39</strong></h1>`;
+	            storyDiv.innerHTML += `<h6 id="title"><strong>> POWERED BY ARTIFICIAL INTELLIGENCE <</strong></h6>`;
+	            storyDiv.innerHTML += `<p id="title">–––––––––––––––––––––––</p>`;
+
                 chatHistory.push({"role": "assistant", "content": aiResponse});
                 displayTextWordByWord(aiResponse);
 
@@ -307,8 +342,8 @@ const translations = {
         "instructionsModalTitle": "Instructions",
         "close": "Close",
         "loading": "Loading...",
-        "aboutContent": `Dark Room AI v0.23 is an interactive scary story experience designed to immerse you in a mysterious narrative guided by an artificial intelligence.<br>This project was created by <a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a> on GitHub.<br>For any feedback or issues, please visit the <a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">GitHub repository</a>.<br>`,
-        "instructionsContent": "Welcome to Dark Room AI! Here is how you can navigate your way through the story: Begin the game by clicking 'Start Game'.<br>Once the story begins, read the prompts carefully.<br>Enter your choices into the input box provided.<br>Click the 'Submit' button to send your choice to the AI.<br>Remember, your choices shape the narrative, so think carefully and enjoy the immersive experience!",
+        "aboutContent": `Dark Room AI v0.39 is an interactive scary story experience designed to immerse you in a mysterious narrative guided by an artificial intelligence. This project was created by <a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a> on GitHub. For any feedback or issues, please visit the <a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">GitHub repository</a>.`,
+        "instructionsContent": "Welcome to Dark Room AI! Here is how you can navigate your way through the story: Begin the game by clicking 'Start Game'. Once the story begins, read the prompts carefully. Enter your choices into the input box provided. Click the 'Submit' button to send your choice to the AI. Remember, your choices shape the narrative, so think carefully and enjoy the immersive experience!",
         "babyEasy": "Baby Mode",
         "easy": "Easy",
         "medium": "Medium",
@@ -324,8 +359,8 @@ const translations = {
         "instructionsModalTitle": "Anweisungen",
         "close": "Schließen",
         "loading": "Wird geladen...",
-        "aboutContent": `Dark Room AI v0.23 ist ein interaktives Gruselgeschichten-Erlebnis, das Sie in eine geheimnisvolle Erzählung eintauchen lässt, die von einer künstlichen Intelligenz geleitet wird.<br>Dieses Projekt wurde von <a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a> auf GitHub erstellt.<br>Für Feedback oder Probleme besuchen Sie bitte das <a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">GitHub-Repository</a>.<br>`,
-        "instructionsContent": "Willkommen bei Dark Room AI! So navigieren Sie durch die Geschichte: Beginnen Sie das Spiel, indem Sie auf 'Spiel starten' klicken.<br>Lesen Sie die Aufforderungen sorgfältig, sobald die Geschichte beginnt.<br>Geben Sie Ihre Entscheidungen in das bereitgestellte Eingabefeld ein.<br>Denken Sie daran, dass Ihre Entscheidungen die Erzählung formen, also denken Sie sorgfältig nach und genießen Sie das immersive Erlebnis!",
+        "aboutContent": `Dark Room AI v0.39 ist ein interaktives Gruselgeschichten-Erlebnis, das Sie in eine geheimnisvolle Erzählung eintauchen lässt, die von einer künstlichen Intelligenz geleitet wird. Dieses Projekt wurde von <a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a> auf GitHub erstellt. Für Feedback oder Probleme besuchen Sie bitte das <a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">GitHub-Repository</a>.`,
+        "instructionsContent": "Willkommen bei Dark Room AI! So navigieren Sie durch die Geschichte: Beginnen Sie das Spiel, indem Sie auf 'Spiel starten' klicken. Lesen Sie die Aufforderungen sorgfältig, sobald die Geschichte beginnt. Geben Sie Ihre Entscheidungen in das bereitgestellte Eingabefeld ein. Denken Sie daran, dass Ihre Entscheidungen die Erzählung formen, also denken Sie sorgfältig nach und genießen Sie das immersive Erlebnis!",
         "babyEasy": "Kindermodus",
         "easy": "Einfach",
         "medium": "Mittel",
@@ -341,8 +376,8 @@ const translations = {
         "instructionsModalTitle": "Instructions",
         "close": "Fermer",
         "loading": "Chargement...",
-        "aboutContent": `Dark Room AI v0.23 est une expérience interactive d'histoire effrayante conçue pour vous plonger dans une narration mystérieuse guidée par une intelligence artificielle.<br>Ce projet a été créé par <a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a> sur GitHub.<br>Pour tout commentaire ou problème, veuillez visiter le <a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">dépôt GitHub</a>.<br>`,
-        "instructionsContent": "Bienvenue dans Dark Room AI! Voici comment vous pouvez naviguer à travers l'histoire: Commencez le jeu en cliquant sur 'Commencer le jeu'.<br>Une fois que l'histoire commence, lisez attentivement les invite.<br>Entrez vos choix dans la boîte d'entrée fournie.<br>Cliquez sur le bouton 'Soumettre' pour envoyer votre choix à l'IA.<br>Rappelez-vous, vos choix façonnent la narration, alors réfléchissez bien et profitez de l'expérience immersive!",
+        "aboutContent": `Dark Room AI v0.39 est une expérience interactive d'histoire effrayante conçue pour vous plonger dans une narration mystérieuse guidée par une intelligence artificielle. Ce projet a été créé par <a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a> sur GitHub. Pour tout commentaire ou problème, veuillez visiter le <a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">dépôt GitHub</a>.`,
+        "instructionsContent": "Bienvenue dans Dark Room AI! Voici comment vous pouvez naviguer à travers l'histoire: Commencez le jeu en cliquant sur 'Commencer le jeu'. Une fois que l'histoire commence, lisez attentivement les invite. Entrez vos choix dans la boîte d'entrée fournie. Cliquez sur le bouton 'Soumettre' pour envoyer votre choix à l'IA. Rappelez-vous, vos choix façonnent la narration, alors réfléchissez bien et profitez de l'expérience immersive!",
         "babyEasy": "Mode Bébé",
         "easy": "Facile",
         "medium": "Moyen",
@@ -358,8 +393,8 @@ const translations = {
         "instructionsModalTitle": "Instrucciones",
         "close": "Cerrar",
         "loading": "Cargando...",
-        "aboutContent": `Dark Room AI v0.23 es una experiencia de historia de terror interactiva diseñada para sumergirte en una narrativa misteriosa guiada por una inteligencia artificial.<br>Este proyecto fue creado por <a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a> en GitHub.<br>Para cualquier comentario o problema, por favor visita el <a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">repositorio en GitHub</a>.<br>`,
-        "instructionsContent": "¡Bienvenido a Dark Room AI! Así es como puedes navegar a través de la historia: Comienza el juego haciendo clic en 'Comenzar juego'.<br>Una vez que comience la historia, lee las indicaciones cuidadosamente.<br>Ingresa tus elecciones en el cuadro de entrada provisto.<br>Haz clic en el botón 'Enviar' para enviar tu elección a la IA.<br>Recuerda, tus decisiones dan forma a la narrativa, así que piensa cuidadosamente y disfruta de la experiencia inmersiva.",
+        "aboutContent": `Dark Room AI v0.39 es una experiencia de historia de terror interactiva diseñada para sumergirte en una narrativa misteriosa guiada por una inteligencia artificial. Este proyecto fue creado por <a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a> en GitHub. Para cualquier comentario o problema, por favor visita el <a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">repositorio en GitHub</a>.`,
+        "instructionsContent": "¡Bienvenido a Dark Room AI! Así es como puedes navegar a través de la historia: Comienza el juego haciendo clic en 'Comenzar juego'. Una vez que comience la historia, lee las indicaciones cuidadosamente. Ingresa tus elecciones en el cuadro de entrada provisto. Haz clic en el botón 'Enviar' para enviar tu elección a la IA. Recuerda, tus decisiones dan forma a la narrativa, así que piensa cuidadosamente y disfruta de la experiencia inmersiva.",
         "babyEasy": "Modo Bebé",
         "easy": "Fácil",
         "medium": "Medio",
@@ -375,8 +410,8 @@ const translations = {
         "instructionsModalTitle": "Istruzioni",
         "close": "Chiudi",
         "loading": "Caricamento...",
-        "aboutContent": `Dark Room AI v0.23 è un'esperienza interattiva di storie spaventose progettata per immergerti in una narrazione misteriosa guidata da un'intelligenza artificiale.<br>Questo progetto è stato creato da <a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a> su GitHub.<br>Per qualsiasi feedback o problema, visita il <a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">repository su GitHub</a>.<br>`,
-        "instructionsContent": "Benvenuto in Dark Room AI! Ecco come puoi navigare attraverso la storia: Inizia il gioco facendo clic su 'Inizia il gioco'.<br>Una volta che la storia inizia, leggi attentamente le istruzioni.<br>Inserisci le tue scelte nella casella di input fornita.<br>Fai clic sul pulsante 'Invia' per inviare la tua scelta all'IA.<br>Ricorda, le tue scelte plasmano la narrazione, quindi pensa attentamente e goditi l'esperienza coinvolgente!",
+        "aboutContent": `Dark Room AI v0.39 è un'esperienza interattiva di storie spaventose progettata per immergerti in una narrazione misteriosa guidata da un'intelligenza artificiale. Questo progetto è stato creato da <a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a> su GitHub. Per qualsiasi feedback o problema, visita il <a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">repository su GitHub</a>.`,
+        "instructionsContent": "Benvenuto in Dark Room AI! Ecco come puoi navigare attraverso la storia: Inizia il gioco facendo clic su 'Inizia il gioco'. Una volta che la storia inizia, leggi attentamente le istruzioni. Inserisci le tue scelte nella casella di input fornita. Fai clic sul pulsante 'Invia' per inviare la tua scelta all'IA. Ricorda, le tue scelte plasmano la narrazione, quindi pensa attentamente e goditi l'esperienza coinvolgente!",
         "babyEasy": "Modalità Bambino",
         "easy": "Facile",
         "medium": "Medio",
@@ -392,7 +427,7 @@ const translations = {
         "instructionsModalTitle": "手順",
         "close": "閉じる",
         "loading": "読み込んでいます...",
-        "aboutContent": `Dark Room AI v0.23は、人工知能によって案内される神秘的な物語体験に没入させることを目的としたインタラクティブな恐怖物語体験です。このプロジェクトは<a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a>がGitHubで作成しました。フィードバックや問題がある場合は、<a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">GitHubリポジトリ</a>をご覧ください。<br>`,
+        "aboutContent": `Dark Room AI v0.39は、人工知能によって案内される神秘的な物語体験に没入させることを目的としたインタラクティブな恐怖物語体験です。このプロジェクトは<a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a>がGitHubで作成しました。フィードバックや問題がある場合は、<a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">GitHubリポジトリ</a>をご覧ください。`,
         "instructionsContent": "Dark Room AIへようこそ！物語を進める方法は次の通りです。'ゲームを開始'をクリックしてゲームを開始します。物語が始まると、指示を注意して読んでください。提供された入力ボックスに選択肢を入力します。'提出'ボタンをクリックして、選択肢をAIに送信します。注意深く考え、没入型体験をお楽しみください！",
         "babyEasy": "ベビーモード",
         "easy": "簡単",
@@ -409,7 +444,7 @@ const translations = {
         "instructionsModalTitle": "说明",
         "close": "关闭",
         "loading": "加载中...",
-        "aboutContent": `Dark Room AI v0.23是一种交互式恐怖故事体验，旨在让您沉浸在由人工智能引导的神秘叙事中。该项目由<a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a>在GitHub上创建。如有任何反馈或问题，请访问<a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">GitHub存储库</a>。<br>`,
+        "aboutContent": `Dark Room AI v0.39是一种交互式恐怖故事体验，旨在让您沉浸在由人工智能引导的神秘叙事中。该项目由<a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a>在GitHub上创建。如有任何反馈或问题，请访问<a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">GitHub存储库</a>。`,
         "instructionsContent": "欢迎来到Dark Room AI！以下是您如何浏览故事的方式: 通过单击“开始游戏”开始游戏。一旦故事开始，请仔细阅读提示。将您的选择输入提供的输入框中。点击“提交”按钮，将您的选择发送给AI。请记住，您的选择将塑造叙事，所以请仔细考虑，享受沉浸式体验！",
         "babyEasy": "婴儿模式",
         "easy": "简单",
@@ -426,8 +461,8 @@ const translations = {
         "instructionsModalTitle": "지시 사항",
         "close": "닫기",
         "loading": "로딩 중...",
-        "aboutContent": `Dark Room AI v0.23은 인공 지능에 의해 안내되는 신비로운 이야기 체험을 제공하기 위해 설계된 대화형 공포 이야기 체험입니다.<br>이 프로젝트는<a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a>가 GitHub에서 만들었습니다.<br>피드백이나 문제가 있으면<a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">GitHub 저장소</a>를 방문하세요.<br>`,
-        "instructionsContent": "Dark Room AI에 오신 것을 환영합니다! 다음은 이야기를 통해 길을 찾는 방법입니다: '게임 시작'을 클릭하여 게임을 시작합니다.<br>이야기가 시작되면 프롬프트를 주의 깊게 읽으십시오.<br>제공된 입력 상자에 선택 사항을 입력하십시오.<br>'제출' 버튼을 클릭하여 AI에게 선택 사항을 전송하십시오.<br>귀하의 선택에 따라 AI가 이야기의 다음 부분을 생성합니다.<br>지시에 따라 계속 선택을 해보세요.",
+        "aboutContent": `Dark Room AI v0.39은 인공 지능에 의해 안내되는 신비로운 이야기 체험을 제공하기 위해 설계된 대화형 공포 이야기 체험입니다. 이 프로젝트는<a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a>가 GitHub에서 만들었습니다. 피드백이나 문제가 있으면<a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">GitHub 저장소</a>를 방문하세요.`,
+        "instructionsContent": "Dark Room AI에 오신 것을 환영합니다! 다음은 이야기를 통해 길을 찾는 방법입니다: '게임 시작'을 클릭하여 게임을 시작합니다. 이야기가 시작되면 프롬프트를 주의 깊게 읽으십시오. 제공된 입력 상자에 선택 사항을 입력하십시오. '제출' 버튼을 클릭하여 AI에게 선택 사항을 전송하십시오. 귀하의 선택에 따라 AI가 이야기의 다음 부분을 생성합니다. 지시에 따라 계속 선택을 해보세요.",
         "babyEasy": "아기 모드",
         "easy": "쉬움",
         "medium": "보통",
@@ -443,8 +478,8 @@ const translations = {
         "instructionsModalTitle": "Инструкции",
         "close": "Закрыть",
         "loading": "Загрузка...",
-        "aboutContent": `Dark Room AI v0.23 - это интерактивное страшное историческое приключение, разработанное для погружения вас в загадочный повествовательный опыт под руководством искусственного интеллекта.<br>Этот проект был создан <a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a> на GitHub.<br>Для любых отзывов или проблем, пожалуйста, посетите <a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">репозиторий на GitHub</a>.<br>`,
-        "instructionsContent": "Добро пожаловать в Dark Room AI! Вот как вы можете пройти через историю: Начните игру, щелкнув 'Начать игру'.<br>Как только история начнется, внимательно читайте подсказки.<br>Введите свой выбор в предоставленное поле для ввода.<br>Нажмите кнопку 'Отправить', чтобы отправить свой выбор ИИ.<br>Помните, что ваши решения формируют повествование, поэтому обдумывайте каждое действие и наслаждайтесь захватывающим опытом!",
+        "aboutContent": `Dark Room AI v0.39 - это интерактивное страшное историческое приключение, разработанное для погружения вас в загадочный повествовательный опыт под руководством искусственного интеллекта. Этот проект был создан <a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a> на GitHub. Для любых отзывов или проблем, пожалуйста, посетите <a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">репозиторий на GitHub</a>.`,
+        "instructionsContent": "Добро пожаловать в Dark Room AI! Вот как вы можете пройти через историю: Начните игру, щелкнув 'Начать игру'. Как только история начнется, внимательно читайте подсказки. Введите свой выбор в предоставленное поле для ввода. Нажмите кнопку 'Отправить', чтобы отправить свой выбор ИИ. Помните, что ваши решения формируют повествование, поэтому обдумывайте каждое действие и наслаждайтесь захватывающим опытом!",
         "babyEasy": "Детский режим",
         "easy": "Легко",
         "medium": "Средний",
@@ -460,8 +495,8 @@ const translations = {
         "instructionsModalTitle": "Instruções",
         "close": "Fechar",
         "loading": "Carregando...",
-        "aboutContent": `Dark Room AI v0.23 é uma experiência interativa de história assustadora projetada para mergulhá-lo em uma narrativa misteriosa guiada por uma inteligência artificial.<br>Este projeto foi criado por <a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a> no GitHub.<br>Para qualquer feedback ou problema, visite o <a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">repositório no GitHub</a>.<br>`,
-        "instructionsContent": "Bem-vindo ao Dark Room AI! Eis como você pode navegar pela história: Comece o jogo clicando em 'Iniciar Jogo'.<br>Uma vez que a história comece, leia atentamente os prompts.<br>Insira suas escolhas na caixa de entrada fornecida.<br>Clique no botão 'Enviar' para enviar sua escolha para a IA.<br>Lembre-se, suas escolhas moldam a narrativa, então pense cuidadosamente e aproveite a experiência imersiva!",
+        "aboutContent": `Dark Room AI v0.39 é uma experiência interativa de história assustadora projetada para mergulhá-lo em uma narrativa misteriosa guiada por uma inteligência artificial. Este projeto foi criado por <a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a> no GitHub. Para qualquer feedback ou problema, visite o <a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">repositório no GitHub</a>.`,
+        "instructionsContent": "Bem-vindo ao Dark Room AI! Eis como você pode navegar pela história: Comece o jogo clicando em 'Iniciar Jogo'. Uma vez que a história comece, leia atentamente os prompts. Insira suas escolhas na caixa de entrada fornecida. Clique no botão 'Enviar' para enviar sua escolha para a IA. Lembre-se, suas escolhas moldam a narrativa, então pense cuidadosamente e aproveite a experiência imersiva!",
         "babyEasy": "Modo Bebê",
         "easy": "Fácil",
         "medium": "Médio",
@@ -477,8 +512,8 @@ const translations = {
         "instructionsModalTitle": "تعليمات",
         "close": "إغلاق",
         "loading": "جارٍ التحميل...",
-        "aboutContent": `Dark Room AI v0.23 هو تجربة قصة مخيفة تفاعلية مصممة لغمرك في سرد غامض يسترشد بالذكاء الاصطناعي.<br>تم إنشاء هذا المشروع بواسطة <a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a> على GitHub.<br>لأي ملاحظات أو مشاكل، يرجى زيارة <a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">مستودع الرموز على GitHub</a>.<br>`,
-        "instructionsContent": "مرحبًا بكم في Dark Room AI! إليك كيف يمكنك التنقل خلال القصة: ابدأ اللعبة بالنقر فوق 'ابدأ اللعبة'.<br>عندما تبدأ القصة، اقرأ التعليمات بعناية.<br>أدخل اختياراتك في مربع الإدخال المقدم.<br>انقر فوق زر 'إرسال' لإرسال اختيارك إلى الذكاء الاصطناعي.<br>تذكر، اختياراتك تشكل السرد، لذا فكر جيدًا واستمتع بالتجربة المشوقة!",
+        "aboutContent": `Dark Room AI v0.39 هو تجربة قصة مخيفة تفاعلية مصممة لغمرك في سرد غامض يسترشد بالذكاء الاصطناعي. تم إنشاء هذا المشروع بواسطة <a href="https://github.com/notBubble" target="_blank" style="color: #bbb;">notBubble</a> على GitHub. لأي ملاحظات أو مشاكل، يرجى زيارة <a href="https://github.com/notBubble/darkroom" target="_blank" style="color: #bbb;">مستودع الرموز على GitHub</a>.`,
+        "instructionsContent": "مرحبًا بكم في Dark Room AI! إليك كيف يمكنك التنقل خلال القصة: ابدأ اللعبة بالنقر فوق 'ابدأ اللعبة'. عندما تبدأ القصة، اقرأ التعليمات بعناية. أدخل اختياراتك في مربع الإدخال المقدم. انقر فوق زر 'إرسال' لإرسال اختيارك إلى الذكاء الاصطناعي. تذكر، اختياراتك تشكل السرد، لذا فكر جيدًا واستمتع بالتجربة المشوقة!",
         "babyEasy": "وضع الطفل",
         "easy": "سهل",
         "medium": "متوسط",
@@ -513,6 +548,8 @@ function updateLanguage() {
         <button onclick="closeModal('instructionsModal')" aria-label="Close">${translations[language].close}</button>
     `;
 }
+
+updateLanguage();
 
 document.getElementById('language-selector').addEventListener('change', function() {
     selectedLanguage = this.value;
@@ -549,7 +586,7 @@ function continueStory() {
 
         showLoading(false);
 
-        if (aiResponse.includes("The End")) {
+        if (aiResponse.includes("‎ ‎ ")) {
             const submitButton = document.querySelector('#input-container button');
             submitButton.textContent = translations[selectedLanguage].backToMenu;
             submitButton.setAttribute('onclick', 'backToMenu()');
@@ -603,4 +640,4 @@ function backToMenu() {
         }
     </script>
 </body>
-</html>
+	</html>
